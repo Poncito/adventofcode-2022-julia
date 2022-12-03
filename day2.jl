@@ -1,12 +1,26 @@
+#=
+result:
+    0 = defeat
+    1 = draw
+    2 = victory
+
+hand:
+    0 = rock
+    1 = paper
+    2 = scissors
+=#
+handvalue(x::Int) = x+1
+resultvalue(r::Int) = 3*r
+result(me::Int, opponent::Int) = mod(me-opponent, -1:1) + 1
+hand(result::Int, opponent::Int) = mod(opponent+result-1, 3)
+score(me::Int, result::Int) = handvalue(me) + resultvalue(result)
+
 open(ARGS[1], "r") do input
-    score1 = 0
-    score2 = 0
+    score1, score2 = 0, 0
     for line in eachline(input)
-        opponent, mine = line[1], line[3]
-        score1 += mine - 'W'
-        score1 += 3 * (mod((mine-23) - opponent,-1:1)+1)
-        score2 += mod((opponent- 'A' + 1) + (mine-'Y'), 1:3)
-        score2 += 3 * (mod(mine-'Y', -1:1) + 1)
+        opponent, me = line[1] - 'A', line[3]-'X'
+        score1 += score(me, result(me, opponent))
+        score2 += score(hand(me, opponent), me)
     end
     score1, score2
 end |> println
